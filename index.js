@@ -6,13 +6,16 @@ const express = require("express");
 const fs = require("fs");
 const bodyParser = require('body-parser');
 const multer = require("multer");
+const path = require("path");
 const app = express();
 app.use(express.static('public'));
 // const urlencodedParser = bodyParser.urlencoded({ extended: true,limit:1024*1024*20,type:'application/x-www-form-urlencoding'})
-app.use(bodyParser.urlencoded({ extended: true,limit:1024*1024*20,type:'application/x-www-form-urlencoding' }));
-app.use(bodyParser.json({limit: '50mb'}));
+// app.use(bodyParser.urlencoded({ extended: true,limit:1024*1024*20,type:'application/x-www-form-urlencoding' }));
+// app.use(bodyParser.json({limit: '50mb'}));
 const MongoClient = require('mongodb').MongoClient;
 const DB_CONN_STR = 'mongodb://localhost:27017/file_uploads'; // 数据库为 runoob
+
+let filesInUploads= [];
 
 // const upload = multer({ dest: 'uploads'})
 var storage = multer.diskStorage({
@@ -46,10 +49,11 @@ app.get('/', function (request, response) {
 })
 
 //  POST 请求
-app.post('/upload', upload.array('file', 2),function (request, response) {
+app.post('/upload', upload.array('file', 2), function (request, response) {
     console.log("收到主页文件上传 POST 请求！");
     console.log("request.body.file: " + request.body.file);
     console.log("request.files: " + request.files);
+    console.log(request.body);
     console.log(request.files);
     // response.send('服务器收到主页文件上传 POST 请求！');
     const files = request.files;
@@ -62,7 +66,7 @@ app.post('/upload', upload.array('file', 2),function (request, response) {
         console.log('文件保存路径：%s', files[i].path);
         console.log("===========" + i + "===========");
     }
-    let filesInUploads= [];
+
 
     fs.readdir( './uploads', function (err, readedFiles) {
         if (err) {
@@ -81,13 +85,54 @@ app.post('/upload', upload.array('file', 2),function (request, response) {
 
 });
 
-
 app.get('/download', function (request, response) {
-    fs.readFile('download.html', function(err,data) {
+    fs.readFile('./views/download.html', function (err, data) {
+        if (err) {
+            console.log(err.stack);
+            response.writeHead(404,{"Content-type": "text/html"});
+        } else {
+            response.writeHead(200,{"Content-type": "text/html"});
+            response.write(data);
+        }
+        response.end();
+    });
+});
+
+app.get('/download/:fileName', function (request, response) {
+    // 实现文件下载
+        var fileName = request.params.fileName;
+        var filePath = path.join(__dirname,'uploads', fileName);
+        console.log("filePath:%s ",filePath);
+        var stats = fs.statSync(filePath);
+        if (stats.isFile()) {
+            response.set({
+                'Content-Type': 'application/octet-stream',
+                'Content-Disposition': 'attachment; filename='+fileName,
+                'Content-Length': stats.size
+            });
+            fs.createReadStream(filePath).pipe(response);
+        } else {
+            response.end(404);
+        }
+});
+
+app.get('/fileList', function (request, response) {
+    fs.readdir( './uploads', function (err, readedFiles) {
         if (err) {
             console.log(err.stack);
         }
-    })
+
+        if (readedFiles.length > 0) {
+            console.log(readedFiles);
+            readedFiles.forEach(function (file) {
+                console.log(file);
+            });
+            response.writeHead(200, {"Content-Type": "application/json"});
+            readedFiles = JSON.stringify(readedFiles);
+            response.write(readedFiles);
+        }
+        response.end();
+    });
 });
 
 const server = app.listen(8081, function () {

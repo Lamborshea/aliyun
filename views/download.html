@@ -64,22 +64,23 @@
             border: 1px solid #cdcdcd;
             padding: 2em;
         }
+
         ol > li {
             margin: 1em auto;
+        }
+
+        #fileList {
+            display: block;
         }
     </style>
 </head>
 <body>
     <div class="wrapper">
-      <div class="header">基于 NodeJS 的文件上传</div>
+      <div class="header">基于 NodeJS 的文件下载</div>
         <div class="container">
             <div class="main">
                 <div class="main-content">
-                    <form action="/upload" method="POST" enctype="multipart/form-data" class="form-file-upload">
-                        <label for="file">文件上传：</label>
-                        <input type="file" name="file" id="file" multiple>
-                        <input type="submit" value="上传文件">
-                    </form>
+                    <ul id="fileList"></ul>
                 </div>
             </div>
             <!-- html 结构中，先写 main，再写 left 和 right -->
@@ -93,5 +94,55 @@
         </div>
       <div class="footer">footer</div>
     </div>
+<script>
+    window.addEventListener("load", function () {
+        var xmlHttp = createXmlHttp();
+        if(!xmlHttp) {
+                alert("您的浏览器不支持AJAX！");
+                return 0;
+            }
+        var fileList = [];
+        var fileListWrapper = document.getElementById("fileList");
+        xmlHttp.open("GET", '/fileList', true);
+        xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xmlHttp.onreadystatechange = function() {
+            if(xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                console.log(xmlHttp.responseText);
+                var result = xmlHttp.responseText;
+                result = JSON.parse(result);
+                if (xmlHttp.responseText) {
+                    fileListWrapper.display = "block";
+                }
+                result.forEach(function (item, index) {
+                    var newANode = document.createElement("a");
+                    newANode.innerHTML=item;
+                    newANode.href = "/download/" + item;
+                    var newLiNode = document.createElement("li");
+                    newLiNode.appendChild(newANode);
+                    fileListWrapper.appendChild(newLiNode);
+                });
+            }
+        }
+        xmlHttp.send();
+    });
+
+    function createXmlHttp() {
+            var xmlHttp = null;
+
+            try {
+                //Firefox, Opera 8.0+, Safari
+                xmlHttp = new XMLHttpRequest();
+            } catch (e) {
+                //IE
+                try {
+                    xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+                } catch (e) {
+                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+            }
+
+            return xmlHttp;
+        }
+</script>
 </body>
 </html>
