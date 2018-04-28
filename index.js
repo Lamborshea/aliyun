@@ -230,4 +230,3 @@ const delData = function(db, callback) {
     // });
 
 // });
->>>>>>> dev
