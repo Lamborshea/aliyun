@@ -61,7 +61,8 @@ typings/
 # dotenv environment variables file
 .env
 
-## 上传文件目录下的文件
-uploads/
+## 忽略上传文件目录下的文件，除了 .keep 文件之外
+uploads/*
+!uploads/.keep
 
 # End of https://www.gitignore.io/api/node

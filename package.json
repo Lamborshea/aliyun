@@ -9,10 +9,17 @@
     "mongodb": "^2.2.31",
     "multer": "^1.3.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "cssnano": "^3.10.0",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^5.0.0",
+    "gulp-postcss": "^7.0.1",
+    "gulp-uglify": "^3.0.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "serve": "node index.js"
   },
   "repository": {
     "type": "git",
