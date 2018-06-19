@@ -9,6 +9,7 @@ const multer = require("multer");
 const path = require("path");
 const app = express();
 app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'dist')));
 // const urlencodedParser = bodyParser.urlencoded({ extended: true,limit:1024*1024*20,type:'application/x-www-form-urlencoding'})
 // app.use(bodyParser.urlencoded({ extended: true,limit:1024*1024*20,type:'application/x-www-form-urlencoding' }));
 // app.use(bodyParser.json({limit: '50mb'}));
@@ -36,18 +37,19 @@ var upload = multer({
 
 app.get('/', function (request, response) {
   // console.time("计时");
-  // fs.readFile("./index.html", 'utf-8', function (err, data) {
-  //         if (err) {
-  //             response.writeHead(404, {'Content-Type': 'text/html', 'charset': 'utf-8'});
-  //         } else {
-  //             response.writeHead(200, {"Content-Type": "text/html", "charset": "utf-8"});
-  //             response.write(data);
-  //             console.log("成功返回 index.html 文件");
-  //         }
-  //             response.end();
-  //             console.timeEnd("读取 index.html 计时");
-  //     });
-  response.sendFile(__dirname + "/" + "index.html");
+  fs.readFile("./index.html", 'utf-8', function (err, data) {
+          if (err) {
+              response.writeHead(404, {'Content-Type': 'text/html', 'charset': 'utf-8'});
+          } else {
+              response.writeHead(200, {"Content-Type": "text/html", "charset": "utf-8"});
+              response.write(data);
+              console.log("成功返回 index.html 文件");
+          }
+              response.end();
+              console.timeEnd("读取 index.html 计时");
+      });
+   // response.writeHead(200, {"Content-Type": "text/html", "charset": "utf-8"});
+  // response.sendFile(__dirname + "/" + "index.html");
 })
 
 //  POST 请求

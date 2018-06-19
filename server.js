@@ -24,12 +24,12 @@ function start() {
                 console.log(err.stack);
                 // HTTP 状态码: 404 : NOT FOUND
                 // Content Type: text/plain
-                
+
                 response.writeHead(404, {'Content-Type': 'text/html', 'charset': 'utf-8'});
             } else {
                 // HTTP 状态码: 200 : OK
                 // Content Type: text/plain
-                response.writeHead(200, {"Content-Type": "text/html"});
+                // response.writeHead(200, {"Content-Type": "text/html"});
                 // response.writeHead(200, {'Content-Type': 'text/html'});
 
                 // 响应文件内容
